@@ -43,11 +43,11 @@ import {
 
 ## How it works
 
-This package determines the `DEPLOYMENT_URL` based on the environment. It prefers framework-prefixed Vercel variables first (for example `NEXT_PUBLIC_VERCEL_URL`, `VITE_VERCEL_URL`, `PUBLIC_VERCEL_URL`) and falls back to Vercel system variables (`VERCEL_URL`, `VERCEL_BRANCH_URL`, etc.):
+This package determines the `DEPLOYMENT_URL` based on the environment. It prefers framework-prefixed Vercel variables first (for example `NEXT_PUBLIC_VERCEL_URL`, `VITE_VERCEL_URL`, `PUBLIC_VERCEL_URL`) and falls back to Vercel system variables (`VERCEL_URL`, `VERCEL_BRANCH_URL`, etc.). For environment selection, it uses `VERCEL_ENV` first and falls back to `VERCEL_TARGET_ENV`, resolving each with the same framework-first priority:
 
-- **In development** (when `VERCEL !== "1"`): 
-  - Uses `TUNNEL_URL` or `NEXT_PUBLIC_TUNNEL_URL` if set (useful for tunnels/proxies like ngrok, Cloudflare Tunnel)
-  - Adds `https://` protocol if the tunnel URL doesn't include a protocol
+- **In development** (when the effective environment is `development`, or no Vercel environment or deployment variables are present and `VERCEL !== "1"`):
+  - Uses `TUNNEL_URL`, `NEXT_PUBLIC_TUNNEL_URL`, `VITE_TUNNEL_URL`, or `PUBLIC_TUNNEL_URL` if set, in that order
+  - Preserves an existing tunnel URL protocol or adds `https://` if absent
   - Otherwise defaults to `http://localhost:3000` (or the port specified in `PORT` env var)
 - **In Vercel preview** (when `VERCEL_ENV === "preview"` or the framework-prefixed equivalent):
   - Uses `VERCEL_BRANCH_URL` (or framework-prefixed equivalent) if available (prefixed with `https://` if needed)
