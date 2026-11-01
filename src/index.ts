@@ -384,6 +384,10 @@ function getDevelopmentUrl(): string {
 function getVercelDeploymentUrl(context: VercelContext): string {
   const effectiveEnv = context.env || context.targetEnv;
 
+  if (effectiveEnv === "development") {
+    return getDevelopmentUrl();
+  }
+
   if (effectiveEnv === "preview") {
     return addProtocol(context.branchUrl || context.url || "localhost:3000");
   }
