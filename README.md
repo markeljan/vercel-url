@@ -131,6 +131,19 @@ When using this package, keep in mind:
 3. If you choose to import and use the other variables (`VERCEL_ENV`, `VERCEL_URL`, etc.), ensure you're not unintentionally exposing sensitive information, although these variables are generally safe to use
 4. The Vercel environment variables (`VERCEL_ENV`, `VERCEL_URL`, etc.) will be `undefined` when running outside of Vercel, so handle these cases appropriately in your code
 
+## Contributing and testing
+
+From the repository root, run the deterministic URL regression checks with Bun:
+
+```bash
+bun src/development-regression.ts
+bun src/development-regression.ts --bundle
+```
+
+The first command checks `src/index.ts` directly. The second builds a temporary Node-targeted bundle from that source and runs the same checks against it. The cases cover local development, tunnels, Vercel environment selection and URL fallbacks, including framework-prefixed variables. They make no model or provider calls and do not test browsers or deployments.
+
+Each run reports `PASS` or `FAIL` for each case and a passed/total count (currently 23 cases). It exits with status 0 when all cases pass and status 1 if any case fails; a bundle build error also causes a nonzero exit.
+
 ## Additional Information
 
 For more details on Vercel's system environment variables, refer to the [official Vercel documentation](https://vercel.com/docs/projects/environment-variables/system-environment-variables#system-environment-variables).
