@@ -133,6 +133,8 @@ When using this package, keep in mind:
 
 ## Contributing and testing
 
+See [CONTRIBUTING.md](CONTRIBUTING.md) for installation and the full list of local checks.
+
 From the repository root, run the deterministic URL regression checks with Bun:
 
 ```bash
