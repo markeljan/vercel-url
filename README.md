@@ -41,6 +41,29 @@ import {
 - Provides easier access to Vercel system environment variables
 - Supports tunnel URLs for local development with proxies (e.g., ngrok, Cloudflare Tunnel)
 
+## Development
+
+Install dependencies:
+
+```bash
+bun install
+```
+
+Lint and format with [ultracite](https://github.com/haydenbleasel/ultracite):
+
+```bash
+bun run lint    # ultracite check
+bun run format  # ultracite fix
+```
+
+Build the package:
+
+```bash
+bun run build
+```
+
+This writes `dist/index.js` and then runs `build:types` (`tsc`) to generate the type declarations in `dist/`.
+
 ## How it works
 
 This package determines the `DEPLOYMENT_URL` based on the environment. It prefers framework-prefixed Vercel variables first (for example `NEXT_PUBLIC_VERCEL_URL`, `VITE_VERCEL_URL`, `PUBLIC_VERCEL_URL`) and falls back to Vercel system variables (`VERCEL_URL`, `VERCEL_BRANCH_URL`, etc.). For environment selection, it uses `VERCEL_ENV` first and falls back to `VERCEL_TARGET_ENV`, resolving each with the same framework-first priority:
