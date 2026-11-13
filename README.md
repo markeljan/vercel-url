@@ -175,7 +175,7 @@ To check your patch for whitespace errors, run:
 git diff --check
 ```
 
-This read-only command does not modify files; it checks uncommitted changes for whitespace errors such as trailing whitespace and for conflict markers. It does not run the package tests or the regression checks above.
+This read-only command does not modify files; it checks unstaged changes in the working tree for whitespace errors such as trailing whitespace and for conflict markers. `git diff --cached --check` checks staged changes the same way. It does not run the package tests or the regression checks above.
 
 ## Additional Information
 
