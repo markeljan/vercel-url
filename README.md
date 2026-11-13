@@ -175,4 +175,4 @@ For more details on Vercel's system environment variables, refer to the [officia
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE.md)
