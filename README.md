@@ -62,7 +62,7 @@ Build the package:
 bun run build
 ```
 
-This writes `dist/index.js` and then runs `build:types` (`tsc`) to generate the type declarations in `dist/`.
+This writes `dist/index.js` and then runs `build:types` (`tsc -p tsconfig.build.json`) to generate the type declarations in `dist/`.
 
 ## How it works
 
