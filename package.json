@@ -33,7 +33,7 @@
   "scripts": {
     "lint": "ultracite check",
     "format": "ultracite fix",
-    "build:types": "tsc",
+    "build:types": "tsc -p tsconfig.build.json",
     "build": "bun build --target=node ./src/index.ts --outfile=dist/index.js && bun run build:types",
     "prepublishOnly": "bun run build",
     "prepare": "bunx lefthook install"
