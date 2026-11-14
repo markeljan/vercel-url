@@ -169,6 +169,14 @@ The first command checks `src/index.ts` directly. The second builds a temporary 
 
 Each run reports `PASS` or `FAIL` for each case and a passed/total count (currently 23 cases). It exits with status 0 when all cases pass and status 1 if any case fails; a bundle build error also causes a nonzero exit.
 
+To check your patch for whitespace errors, run:
+
+```bash
+git diff --check
+```
+
+This read-only command does not modify files; it checks unstaged changes in the working tree for whitespace errors such as trailing whitespace and for conflict markers. `git diff --cached --check` checks staged changes the same way. It does not run the package tests or the regression checks above.
+
 ## Additional Information
 
 For more details on Vercel's system environment variables, refer to the [official Vercel documentation](https://vercel.com/docs/projects/environment-variables/system-environment-variables#system-environment-variables).
