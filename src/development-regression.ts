@@ -120,9 +120,8 @@ for (const prefix of [
 
 type BrowserCase = {
   name: string;
-  defines: Record<string, string>;
   expected: string;
-};
+} & ({ defines: Record<string, string> } | { env: Record<string, string> });
 const viteDefines = (values: Record<string, string>): Record<string, string> =>
   Object.fromEntries(
     Object.entries(values).map(([key, value]) => [
@@ -140,6 +139,40 @@ const browserCases: BrowserCase[] = [
     name: "browser no-value control",
     defines: {},
     expected: "http://localhost:3000",
+  },
+  {
+    name: "browser Bun PUBLIC_ preview branch URL",
+    env: {
+      PUBLIC_VERCEL_ENV: "preview",
+      PUBLIC_VERCEL_BRANCH_URL: "branch.example.test",
+      PUBLIC_VERCEL_URL: "deploy.example.test",
+    },
+    expected: "https://branch.example.test",
+  },
+  {
+    name: "browser Bun PUBLIC_ target and production URL",
+    env: {
+      PUBLIC_VERCEL_TARGET_ENV: "production",
+      PUBLIC_VERCEL_PROJECT_PRODUCTION_URL: "prod.example.test",
+      PUBLIC_VERCEL_URL: "deploy.example.test",
+    },
+    expected: "https://prod.example.test",
+  },
+  {
+    name: "browser Bun PUBLIC_ deployment fallback",
+    env: {
+      PUBLIC_VERCEL_ENV: "preview",
+      PUBLIC_VERCEL_URL: "deploy.example.test",
+    },
+    expected: "https://deploy.example.test",
+  },
+  {
+    name: "browser Bun PUBLIC_ development tunnel",
+    env: {
+      PUBLIC_VERCEL_ENV: "development",
+      PUBLIC_TUNNEL_URL: "dev.example.test",
+    },
+    expected: "https://dev.example.test",
   },
   {
     name: "browser Vite preview branch URL",
@@ -223,12 +256,18 @@ function runBrowserCase(test: BrowserCase, entry: string): boolean {
       "--target=browser",
       "--format=esm",
     ];
-    for (const [key, value] of Object.entries(test.defines)) {
-      args.push("--define", `${key}=${value}`);
+    const env = { PATH: process.env.PATH ?? "/usr/bin:/bin" };
+    if ("defines" in test) {
+      for (const [key, value] of Object.entries(test.defines)) {
+        args.push("--define", `${key}=${value}`);
+      }
+    } else {
+      args.push("--env", "PUBLIC_*");
+      Object.assign(env, test.env);
     }
     const built = spawnSync(process.execPath, args, {
       cwd: dir,
-      env: { PATH: process.env.PATH ?? "/usr/bin:/bin" },
+      env,
       stdio: "pipe",
     });
     let actual = "";

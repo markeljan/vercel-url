@@ -83,6 +83,18 @@ function readViteStaticVERCEL_PROJECT_PRODUCTION_URL(): EnvValue {
   }
 }
 
+/**
+ * Bun can inline literal PUBLIC_ reads in browser bundles. Try the read before
+ * testing for a Node global so an inlined value also works without process.
+ */
+function readPublicProcessEnv(read: EnvReader): EnvValue {
+  try {
+    return read();
+  } catch {
+    return undefined;
+  }
+}
+
 const FRAMEWORK_VERCEL_ENV_READERS: Record<
   VercelEnvName,
   readonly EnvReader[]
@@ -111,10 +123,7 @@ const FRAMEWORK_VERCEL_ENV_READERS: Record<
     () =>
       typeof process !== "undefined" ? process.env.VITE_VERCEL_ENV : undefined,
     readViteStaticVERCEL_ENV,
-    () =>
-      typeof process !== "undefined"
-        ? process.env.PUBLIC_VERCEL_ENV
-        : undefined,
+    () => readPublicProcessEnv(() => process.env.PUBLIC_VERCEL_ENV),
     () => importMetaEnv?.PUBLIC_VERCEL_ENV,
     () =>
       typeof process !== "undefined"
@@ -158,10 +167,7 @@ const FRAMEWORK_VERCEL_ENV_READERS: Record<
         ? process.env.VITE_VERCEL_TARGET_ENV
         : undefined,
     readViteStaticVERCEL_TARGET_ENV,
-    () =>
-      typeof process !== "undefined"
-        ? process.env.PUBLIC_VERCEL_TARGET_ENV
-        : undefined,
+    () => readPublicProcessEnv(() => process.env.PUBLIC_VERCEL_TARGET_ENV),
     () => importMetaEnv?.PUBLIC_VERCEL_TARGET_ENV,
     () =>
       typeof process !== "undefined"
@@ -203,10 +209,7 @@ const FRAMEWORK_VERCEL_ENV_READERS: Record<
     () =>
       typeof process !== "undefined" ? process.env.VITE_VERCEL_URL : undefined,
     readViteStaticVERCEL_URL,
-    () =>
-      typeof process !== "undefined"
-        ? process.env.PUBLIC_VERCEL_URL
-        : undefined,
+    () => readPublicProcessEnv(() => process.env.PUBLIC_VERCEL_URL),
     () => importMetaEnv?.PUBLIC_VERCEL_URL,
     () =>
       typeof process !== "undefined"
@@ -250,10 +253,7 @@ const FRAMEWORK_VERCEL_ENV_READERS: Record<
         ? process.env.VITE_VERCEL_BRANCH_URL
         : undefined,
     readViteStaticVERCEL_BRANCH_URL,
-    () =>
-      typeof process !== "undefined"
-        ? process.env.PUBLIC_VERCEL_BRANCH_URL
-        : undefined,
+    () => readPublicProcessEnv(() => process.env.PUBLIC_VERCEL_BRANCH_URL),
     () => importMetaEnv?.PUBLIC_VERCEL_BRANCH_URL,
     () =>
       typeof process !== "undefined"
@@ -298,9 +298,9 @@ const FRAMEWORK_VERCEL_ENV_READERS: Record<
         : undefined,
     readViteStaticVERCEL_PROJECT_PRODUCTION_URL,
     () =>
-      typeof process !== "undefined"
-        ? process.env.PUBLIC_VERCEL_PROJECT_PRODUCTION_URL
-        : undefined,
+      readPublicProcessEnv(
+        () => process.env.PUBLIC_VERCEL_PROJECT_PRODUCTION_URL
+      ),
     () => importMetaEnv?.PUBLIC_VERCEL_PROJECT_PRODUCTION_URL,
     () =>
       typeof process !== "undefined"
@@ -376,8 +376,7 @@ const TUNNEL_URL_READERS: readonly EnvReader[] = [
   () =>
     typeof process !== "undefined" ? process.env.VITE_TUNNEL_URL : undefined,
   readViteTunnelUrl,
-  () =>
-    typeof process !== "undefined" ? process.env.PUBLIC_TUNNEL_URL : undefined,
+  () => readPublicProcessEnv(() => process.env.PUBLIC_TUNNEL_URL),
   () => importMetaEnv?.PUBLIC_TUNNEL_URL,
 ];
 

@@ -41,6 +41,13 @@ function readViteStaticVERCEL_PROJECT_PRODUCTION_URL() {
     return importMetaEnv?.VITE_VERCEL_PROJECT_PRODUCTION_URL;
   }
 }
+function readPublicProcessEnv(read) {
+  try {
+    return read();
+  } catch {
+    return;
+  }
+}
 var FRAMEWORK_VERCEL_ENV_READERS = {
   VERCEL_ENV: [
     () => typeof process !== "undefined" ? process.env.NEXT_PUBLIC_VERCEL_ENV : undefined,
@@ -53,7 +60,7 @@ var FRAMEWORK_VERCEL_ENV_READERS = {
     () => importMetaEnv?.GATSBY_VERCEL_ENV,
     () => typeof process !== "undefined" ? process.env.VITE_VERCEL_ENV : undefined,
     readViteStaticVERCEL_ENV,
-    () => typeof process !== "undefined" ? process.env.PUBLIC_VERCEL_ENV : undefined,
+    () => readPublicProcessEnv(() => process.env.PUBLIC_VERCEL_ENV),
     () => importMetaEnv?.PUBLIC_VERCEL_ENV,
     () => typeof process !== "undefined" ? process.env.VUE_APP_VERCEL_ENV : undefined,
     () => importMetaEnv?.VUE_APP_VERCEL_ENV,
@@ -73,7 +80,7 @@ var FRAMEWORK_VERCEL_ENV_READERS = {
     () => importMetaEnv?.GATSBY_VERCEL_TARGET_ENV,
     () => typeof process !== "undefined" ? process.env.VITE_VERCEL_TARGET_ENV : undefined,
     readViteStaticVERCEL_TARGET_ENV,
-    () => typeof process !== "undefined" ? process.env.PUBLIC_VERCEL_TARGET_ENV : undefined,
+    () => readPublicProcessEnv(() => process.env.PUBLIC_VERCEL_TARGET_ENV),
     () => importMetaEnv?.PUBLIC_VERCEL_TARGET_ENV,
     () => typeof process !== "undefined" ? process.env.VUE_APP_VERCEL_TARGET_ENV : undefined,
     () => importMetaEnv?.VUE_APP_VERCEL_TARGET_ENV,
@@ -93,7 +100,7 @@ var FRAMEWORK_VERCEL_ENV_READERS = {
     () => importMetaEnv?.GATSBY_VERCEL_URL,
     () => typeof process !== "undefined" ? process.env.VITE_VERCEL_URL : undefined,
     readViteStaticVERCEL_URL,
-    () => typeof process !== "undefined" ? process.env.PUBLIC_VERCEL_URL : undefined,
+    () => readPublicProcessEnv(() => process.env.PUBLIC_VERCEL_URL),
     () => importMetaEnv?.PUBLIC_VERCEL_URL,
     () => typeof process !== "undefined" ? process.env.VUE_APP_VERCEL_URL : undefined,
     () => importMetaEnv?.VUE_APP_VERCEL_URL,
@@ -113,7 +120,7 @@ var FRAMEWORK_VERCEL_ENV_READERS = {
     () => importMetaEnv?.GATSBY_VERCEL_BRANCH_URL,
     () => typeof process !== "undefined" ? process.env.VITE_VERCEL_BRANCH_URL : undefined,
     readViteStaticVERCEL_BRANCH_URL,
-    () => typeof process !== "undefined" ? process.env.PUBLIC_VERCEL_BRANCH_URL : undefined,
+    () => readPublicProcessEnv(() => process.env.PUBLIC_VERCEL_BRANCH_URL),
     () => importMetaEnv?.PUBLIC_VERCEL_BRANCH_URL,
     () => typeof process !== "undefined" ? process.env.VUE_APP_VERCEL_BRANCH_URL : undefined,
     () => importMetaEnv?.VUE_APP_VERCEL_BRANCH_URL,
@@ -133,7 +140,7 @@ var FRAMEWORK_VERCEL_ENV_READERS = {
     () => importMetaEnv?.GATSBY_VERCEL_PROJECT_PRODUCTION_URL,
     () => typeof process !== "undefined" ? process.env.VITE_VERCEL_PROJECT_PRODUCTION_URL : undefined,
     readViteStaticVERCEL_PROJECT_PRODUCTION_URL,
-    () => typeof process !== "undefined" ? process.env.PUBLIC_VERCEL_PROJECT_PRODUCTION_URL : undefined,
+    () => readPublicProcessEnv(() => process.env.PUBLIC_VERCEL_PROJECT_PRODUCTION_URL),
     () => importMetaEnv?.PUBLIC_VERCEL_PROJECT_PRODUCTION_URL,
     () => typeof process !== "undefined" ? process.env.VUE_APP_VERCEL_PROJECT_PRODUCTION_URL : undefined,
     () => importMetaEnv?.VUE_APP_VERCEL_PROJECT_PRODUCTION_URL,
@@ -178,7 +185,7 @@ var TUNNEL_URL_READERS = [
   () => importMetaEnv?.NEXT_PUBLIC_TUNNEL_URL,
   () => typeof process !== "undefined" ? process.env.VITE_TUNNEL_URL : undefined,
   readViteTunnelUrl,
-  () => typeof process !== "undefined" ? process.env.PUBLIC_TUNNEL_URL : undefined,
+  () => readPublicProcessEnv(() => process.env.PUBLIC_TUNNEL_URL),
   () => importMetaEnv?.PUBLIC_TUNNEL_URL
 ];
 function readFirstEnv(...groups) {
