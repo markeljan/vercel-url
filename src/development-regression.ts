@@ -118,17 +118,97 @@ for (const prefix of [
   });
 }
 
-type BrowserCase = { name: string; define: boolean; expected: string };
+type BrowserCase = {
+  name: string;
+  defines: Record<string, string>;
+  expected: string;
+};
+const viteDefines = (values: Record<string, string>): Record<string, string> =>
+  Object.fromEntries(
+    Object.entries(values).map(([key, value]) => [
+      `import.meta.env.${key}`,
+      JSON.stringify(value),
+    ])
+  );
 const browserCases: BrowserCase[] = [
   {
     name: "browser Vite tunnel define",
-    define: true,
+    defines: viteDefines({ VITE_TUNNEL_URL: "dev.example.test" }),
     expected: "https://dev.example.test",
   },
   {
     name: "browser no-value control",
-    define: false,
+    defines: {},
     expected: "http://localhost:3000",
+  },
+  {
+    name: "browser Vite preview branch URL",
+    defines: viteDefines({
+      VITE_VERCEL_ENV: "preview",
+      VITE_VERCEL_BRANCH_URL: "branch.example.test",
+      VITE_VERCEL_URL: "deploy.example.test",
+    }),
+    expected: "https://branch.example.test",
+  },
+  {
+    name: "browser Vite preview falls back to deployment URL",
+    defines: viteDefines({
+      VITE_VERCEL_ENV: "preview",
+      VITE_VERCEL_URL: "deploy.example.test",
+    }),
+    expected: "https://deploy.example.test",
+  },
+  {
+    name: "browser Vite production project URL",
+    defines: viteDefines({
+      VITE_VERCEL_ENV: "production",
+      VITE_VERCEL_PROJECT_PRODUCTION_URL: "prod.example.test",
+      VITE_VERCEL_URL: "deploy.example.test",
+    }),
+    expected: "https://prod.example.test",
+  },
+  {
+    name: "browser Vite production deployment fallback",
+    defines: viteDefines({
+      VITE_VERCEL_ENV: "production",
+      VITE_VERCEL_URL: "deploy.example.test",
+    }),
+    expected: "https://deploy.example.test",
+  },
+  {
+    name: "browser Vite target env fallback",
+    defines: viteDefines({
+      VITE_VERCEL_TARGET_ENV: "production",
+      VITE_VERCEL_PROJECT_PRODUCTION_URL: "prod.example.test",
+    }),
+    expected: "https://prod.example.test",
+  },
+  {
+    name: "browser Vite env priority over target env",
+    defines: viteDefines({
+      VITE_VERCEL_ENV: "preview",
+      VITE_VERCEL_TARGET_ENV: "production",
+      VITE_VERCEL_BRANCH_URL: "branch.example.test",
+      VITE_VERCEL_PROJECT_PRODUCTION_URL: "prod.example.test",
+    }),
+    expected: "https://branch.example.test",
+  },
+  {
+    name: "browser Vite explicit protocol preserved",
+    defines: viteDefines({
+      VITE_VERCEL_ENV: "preview",
+      VITE_VERCEL_BRANCH_URL: "http://branch.example.test:4321",
+    }),
+    expected: "http://branch.example.test:4321",
+  },
+  {
+    name: "browser Vite development tunnel",
+    defines: viteDefines({
+      VITE_VERCEL_ENV: "development",
+      VITE_TUNNEL_URL: "dev.example.test",
+      VITE_VERCEL_URL: "old.example.test",
+    }),
+    expected: "https://dev.example.test",
   },
 ];
 
@@ -143,11 +223,8 @@ function runBrowserCase(test: BrowserCase, entry: string): boolean {
       "--target=browser",
       "--format=esm",
     ];
-    if (test.define) {
-      args.push(
-        "--define",
-        'import.meta.env.VITE_TUNNEL_URL="dev.example.test"'
-      );
+    for (const [key, value] of Object.entries(test.defines)) {
+      args.push("--define", `${key}=${value}`);
     }
     const built = spawnSync(process.execPath, args, {
       cwd: dir,

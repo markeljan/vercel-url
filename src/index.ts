@@ -28,6 +28,61 @@ type VercelContext = {
 const importMetaEnv = (import.meta as ImportMetaWithEnv).env;
 const PROTOCOL_RE = /^https?:\/\//i;
 
+/**
+ * Written as literal `import.meta.env.VITE_*` reads so bundlers can statically
+ * replace them; the try/catch keeps them safe when `import.meta.env` is absent
+ * (e.g. plain Node or Bun runtime). Falls back to the dynamic env object.
+ */
+function readViteStaticVERCEL_ENV(): EnvValue {
+  try {
+    // @ts-expect-error ImportMeta.env is only typed by bundler-specific types.
+    const value: EnvValue = import.meta.env.VITE_VERCEL_ENV;
+    return value || importMetaEnv?.VITE_VERCEL_ENV;
+  } catch {
+    return importMetaEnv?.VITE_VERCEL_ENV;
+  }
+}
+
+function readViteStaticVERCEL_TARGET_ENV(): EnvValue {
+  try {
+    // @ts-expect-error ImportMeta.env is only typed by bundler-specific types.
+    const value: EnvValue = import.meta.env.VITE_VERCEL_TARGET_ENV;
+    return value || importMetaEnv?.VITE_VERCEL_TARGET_ENV;
+  } catch {
+    return importMetaEnv?.VITE_VERCEL_TARGET_ENV;
+  }
+}
+
+function readViteStaticVERCEL_URL(): EnvValue {
+  try {
+    // @ts-expect-error ImportMeta.env is only typed by bundler-specific types.
+    const value: EnvValue = import.meta.env.VITE_VERCEL_URL;
+    return value || importMetaEnv?.VITE_VERCEL_URL;
+  } catch {
+    return importMetaEnv?.VITE_VERCEL_URL;
+  }
+}
+
+function readViteStaticVERCEL_BRANCH_URL(): EnvValue {
+  try {
+    // @ts-expect-error ImportMeta.env is only typed by bundler-specific types.
+    const value: EnvValue = import.meta.env.VITE_VERCEL_BRANCH_URL;
+    return value || importMetaEnv?.VITE_VERCEL_BRANCH_URL;
+  } catch {
+    return importMetaEnv?.VITE_VERCEL_BRANCH_URL;
+  }
+}
+
+function readViteStaticVERCEL_PROJECT_PRODUCTION_URL(): EnvValue {
+  try {
+    // @ts-expect-error ImportMeta.env is only typed by bundler-specific types.
+    const value: EnvValue = import.meta.env.VITE_VERCEL_PROJECT_PRODUCTION_URL;
+    return value || importMetaEnv?.VITE_VERCEL_PROJECT_PRODUCTION_URL;
+  } catch {
+    return importMetaEnv?.VITE_VERCEL_PROJECT_PRODUCTION_URL;
+  }
+}
+
 const FRAMEWORK_VERCEL_ENV_READERS: Record<
   VercelEnvName,
   readonly EnvReader[]
@@ -55,7 +110,7 @@ const FRAMEWORK_VERCEL_ENV_READERS: Record<
     () => importMetaEnv?.GATSBY_VERCEL_ENV,
     () =>
       typeof process !== "undefined" ? process.env.VITE_VERCEL_ENV : undefined,
-    () => importMetaEnv?.VITE_VERCEL_ENV,
+    readViteStaticVERCEL_ENV,
     () =>
       typeof process !== "undefined"
         ? process.env.PUBLIC_VERCEL_ENV
@@ -102,7 +157,7 @@ const FRAMEWORK_VERCEL_ENV_READERS: Record<
       typeof process !== "undefined"
         ? process.env.VITE_VERCEL_TARGET_ENV
         : undefined,
-    () => importMetaEnv?.VITE_VERCEL_TARGET_ENV,
+    readViteStaticVERCEL_TARGET_ENV,
     () =>
       typeof process !== "undefined"
         ? process.env.PUBLIC_VERCEL_TARGET_ENV
@@ -147,7 +202,7 @@ const FRAMEWORK_VERCEL_ENV_READERS: Record<
     () => importMetaEnv?.GATSBY_VERCEL_URL,
     () =>
       typeof process !== "undefined" ? process.env.VITE_VERCEL_URL : undefined,
-    () => importMetaEnv?.VITE_VERCEL_URL,
+    readViteStaticVERCEL_URL,
     () =>
       typeof process !== "undefined"
         ? process.env.PUBLIC_VERCEL_URL
@@ -194,7 +249,7 @@ const FRAMEWORK_VERCEL_ENV_READERS: Record<
       typeof process !== "undefined"
         ? process.env.VITE_VERCEL_BRANCH_URL
         : undefined,
-    () => importMetaEnv?.VITE_VERCEL_BRANCH_URL,
+    readViteStaticVERCEL_BRANCH_URL,
     () =>
       typeof process !== "undefined"
         ? process.env.PUBLIC_VERCEL_BRANCH_URL
@@ -241,7 +296,7 @@ const FRAMEWORK_VERCEL_ENV_READERS: Record<
       typeof process !== "undefined"
         ? process.env.VITE_VERCEL_PROJECT_PRODUCTION_URL
         : undefined,
-    () => importMetaEnv?.VITE_VERCEL_PROJECT_PRODUCTION_URL,
+    readViteStaticVERCEL_PROJECT_PRODUCTION_URL,
     () =>
       typeof process !== "undefined"
         ? process.env.PUBLIC_VERCEL_PROJECT_PRODUCTION_URL
