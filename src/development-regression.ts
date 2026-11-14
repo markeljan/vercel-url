@@ -117,6 +117,73 @@ for (const prefix of [
     expected: "http://localhost:4321",
   });
 }
+
+type BrowserCase = { name: string; define: boolean; expected: string };
+const browserCases: BrowserCase[] = [
+  {
+    name: "browser Vite tunnel define",
+    define: true,
+    expected: "https://dev.example.test",
+  },
+  {
+    name: "browser no-value control",
+    define: false,
+    expected: "http://localhost:3000",
+  },
+];
+
+function runBrowserCase(test: BrowserCase, entry: string): boolean {
+  const dir = mkdtempSync(join(tmpdir(), "vercel-url-browser-"));
+  try {
+    const args = [
+      "build",
+      entry,
+      "--outdir",
+      dir,
+      "--target=browser",
+      "--format=esm",
+    ];
+    if (test.define) {
+      args.push(
+        "--define",
+        'import.meta.env.VITE_TUNNEL_URL="dev.example.test"'
+      );
+    }
+    const built = spawnSync(process.execPath, args, {
+      cwd: dir,
+      env: { PATH: process.env.PATH ?? "/usr/bin:/bin" },
+      stdio: "pipe",
+    });
+    let actual = "";
+    let pass = false;
+    if (built.status === 0) {
+      const bundle = join(dir, "index.js");
+      // Run with no global process, from an empty directory with no env/dotenv.
+      const run = spawnSync(
+        process.execPath,
+        [
+          "--no-env-file",
+          "-e",
+          `delete globalThis.process; const m = await import(${JSON.stringify(bundle)}); console.log(m.DEPLOYMENT_URL);`,
+        ],
+        {
+          cwd: dir,
+          env: { PATH: process.env.PATH ?? "/usr/bin:/bin" },
+          stdio: "pipe",
+        }
+      );
+      actual = run.stdout.toString().trim();
+      pass = run.status === 0 && actual === test.expected;
+    }
+    console.log(
+      `${pass ? "PASS" : "FAIL"} ${test.name}: ${actual} (expected ${test.expected})`
+    );
+    return pass;
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+}
+
 let root: string | undefined;
 try {
   let entry = resolve(process.cwd(), "src/index.ts");
@@ -157,7 +224,13 @@ try {
       failures++;
     }
   }
-  console.log(`${cases.length - failures}/${cases.length} cases passed`);
+  for (const test of browserCases) {
+    if (!runBrowserCase(test, resolve(process.cwd(), "src/index.ts"))) {
+      failures++;
+    }
+  }
+  const total = cases.length + browserCases.length;
+  console.log(`${total - failures}/${total} cases passed`);
   if (failures) {
     console.error("DEVELOPMENT_URL_REGRESSION");
     process.exitCode = 1;
