@@ -100,10 +100,7 @@ const FRAMEWORK_VERCEL_ENV_READERS: Record<
   readonly EnvReader[]
 > = {
   VERCEL_ENV: [
-    () =>
-      typeof process !== "undefined"
-        ? process.env.NEXT_PUBLIC_VERCEL_ENV
-        : undefined,
+    () => readPublicProcessEnv(() => process.env.NEXT_PUBLIC_VERCEL_ENV),
     () => importMetaEnv?.NEXT_PUBLIC_VERCEL_ENV,
     () =>
       typeof process !== "undefined"
@@ -142,10 +139,7 @@ const FRAMEWORK_VERCEL_ENV_READERS: Record<
     () => importMetaEnv?.SANITY_STUDIO_VERCEL_ENV,
   ],
   VERCEL_TARGET_ENV: [
-    () =>
-      typeof process !== "undefined"
-        ? process.env.NEXT_PUBLIC_VERCEL_TARGET_ENV
-        : undefined,
+    () => readPublicProcessEnv(() => process.env.NEXT_PUBLIC_VERCEL_TARGET_ENV),
     () => importMetaEnv?.NEXT_PUBLIC_VERCEL_TARGET_ENV,
     () =>
       typeof process !== "undefined"
@@ -186,10 +180,7 @@ const FRAMEWORK_VERCEL_ENV_READERS: Record<
     () => importMetaEnv?.SANITY_STUDIO_VERCEL_TARGET_ENV,
   ],
   VERCEL_URL: [
-    () =>
-      typeof process !== "undefined"
-        ? process.env.NEXT_PUBLIC_VERCEL_URL
-        : undefined,
+    () => readPublicProcessEnv(() => process.env.NEXT_PUBLIC_VERCEL_URL),
     () => importMetaEnv?.NEXT_PUBLIC_VERCEL_URL,
     () =>
       typeof process !== "undefined"
@@ -228,10 +219,7 @@ const FRAMEWORK_VERCEL_ENV_READERS: Record<
     () => importMetaEnv?.SANITY_STUDIO_VERCEL_URL,
   ],
   VERCEL_BRANCH_URL: [
-    () =>
-      typeof process !== "undefined"
-        ? process.env.NEXT_PUBLIC_VERCEL_BRANCH_URL
-        : undefined,
+    () => readPublicProcessEnv(() => process.env.NEXT_PUBLIC_VERCEL_BRANCH_URL),
     () => importMetaEnv?.NEXT_PUBLIC_VERCEL_BRANCH_URL,
     () =>
       typeof process !== "undefined"
@@ -273,9 +261,9 @@ const FRAMEWORK_VERCEL_ENV_READERS: Record<
   ],
   VERCEL_PROJECT_PRODUCTION_URL: [
     () =>
-      typeof process !== "undefined"
-        ? process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL
-        : undefined,
+      readPublicProcessEnv(
+        () => process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL
+      ),
     () => importMetaEnv?.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL,
     () =>
       typeof process !== "undefined"
@@ -368,10 +356,7 @@ function readViteTunnelUrl(): EnvValue {
 
 const TUNNEL_URL_READERS: readonly EnvReader[] = [
   () => (typeof process !== "undefined" ? process.env.TUNNEL_URL : undefined),
-  () =>
-    typeof process !== "undefined"
-      ? process.env.NEXT_PUBLIC_TUNNEL_URL
-      : undefined,
+  () => readPublicProcessEnv(() => process.env.NEXT_PUBLIC_TUNNEL_URL),
   () => importMetaEnv?.NEXT_PUBLIC_TUNNEL_URL,
   () =>
     typeof process !== "undefined" ? process.env.VITE_TUNNEL_URL : undefined,

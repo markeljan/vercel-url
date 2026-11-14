@@ -129,7 +129,79 @@ const viteDefines = (values: Record<string, string>): Record<string, string> =>
       JSON.stringify(value),
     ])
   );
+const nextDefines = (values: Record<string, string>): Record<string, string> =>
+  Object.fromEntries(
+    Object.entries(values).map(([key, value]) => [
+      `process.env.${key}`,
+      JSON.stringify(value),
+    ])
+  );
 const browserCases: BrowserCase[] = [
+  {
+    name: "browser Next.js preview branch URL",
+    defines: nextDefines({
+      NEXT_PUBLIC_VERCEL_ENV: "preview",
+      NEXT_PUBLIC_VERCEL_BRANCH_URL: "branch.example.test",
+      NEXT_PUBLIC_VERCEL_URL: "deploy.example.test",
+    }),
+    expected: "https://branch.example.test",
+  },
+  {
+    name: "browser Next.js preview deployment fallback",
+    defines: nextDefines({
+      NEXT_PUBLIC_VERCEL_ENV: "preview",
+      NEXT_PUBLIC_VERCEL_URL: "deploy.example.test",
+    }),
+    expected: "https://deploy.example.test",
+  },
+  {
+    name: "browser Next.js production project URL",
+    defines: nextDefines({
+      NEXT_PUBLIC_VERCEL_ENV: "production",
+      NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL: "prod.example.test",
+      NEXT_PUBLIC_VERCEL_URL: "deploy.example.test",
+    }),
+    expected: "https://prod.example.test",
+  },
+  {
+    name: "browser Next.js production deployment fallback",
+    defines: nextDefines({
+      NEXT_PUBLIC_VERCEL_ENV: "production",
+      NEXT_PUBLIC_VERCEL_URL: "deploy.example.test",
+    }),
+    expected: "https://deploy.example.test",
+  },
+  {
+    name: "browser Next.js target env fallback",
+    defines: nextDefines({
+      NEXT_PUBLIC_VERCEL_TARGET_ENV: "production",
+      NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL: "prod.example.test",
+    }),
+    expected: "https://prod.example.test",
+  },
+  {
+    name: "browser Next.js development tunnel",
+    defines: nextDefines({
+      NEXT_PUBLIC_VERCEL_ENV: "development",
+      NEXT_PUBLIC_TUNNEL_URL: "dev.example.test",
+      NEXT_PUBLIC_VERCEL_URL: "old.example.test",
+    }),
+    expected: "https://dev.example.test",
+  },
+  {
+    name: "browser Next.js partial values",
+    defines: nextDefines({ NEXT_PUBLIC_VERCEL_ENV: "preview" }),
+    expected: "https://localhost:3000",
+  },
+  {
+    name: "browser Next.js empty values",
+    defines: nextDefines({
+      NEXT_PUBLIC_VERCEL_ENV: "",
+      NEXT_PUBLIC_VERCEL_BRANCH_URL: "",
+      NEXT_PUBLIC_TUNNEL_URL: "",
+    }),
+    expected: "http://localhost:3000",
+  },
   {
     name: "browser Vite tunnel define",
     defines: viteDefines({ VITE_TUNNEL_URL: "dev.example.test" }),
