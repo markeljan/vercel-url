@@ -50,7 +50,7 @@ function readPublicProcessEnv(read) {
 }
 var FRAMEWORK_VERCEL_ENV_READERS = {
   VERCEL_ENV: [
-    () => typeof process !== "undefined" ? process.env.NEXT_PUBLIC_VERCEL_ENV : undefined,
+    () => readPublicProcessEnv(() => process.env.NEXT_PUBLIC_VERCEL_ENV),
     () => importMetaEnv?.NEXT_PUBLIC_VERCEL_ENV,
     () => typeof process !== "undefined" ? process.env.NUXT_ENV_VERCEL_ENV : undefined,
     () => importMetaEnv?.NUXT_ENV_VERCEL_ENV,
@@ -70,7 +70,7 @@ var FRAMEWORK_VERCEL_ENV_READERS = {
     () => importMetaEnv?.SANITY_STUDIO_VERCEL_ENV
   ],
   VERCEL_TARGET_ENV: [
-    () => typeof process !== "undefined" ? process.env.NEXT_PUBLIC_VERCEL_TARGET_ENV : undefined,
+    () => readPublicProcessEnv(() => process.env.NEXT_PUBLIC_VERCEL_TARGET_ENV),
     () => importMetaEnv?.NEXT_PUBLIC_VERCEL_TARGET_ENV,
     () => typeof process !== "undefined" ? process.env.NUXT_ENV_VERCEL_TARGET_ENV : undefined,
     () => importMetaEnv?.NUXT_ENV_VERCEL_TARGET_ENV,
@@ -90,7 +90,7 @@ var FRAMEWORK_VERCEL_ENV_READERS = {
     () => importMetaEnv?.SANITY_STUDIO_VERCEL_TARGET_ENV
   ],
   VERCEL_URL: [
-    () => typeof process !== "undefined" ? process.env.NEXT_PUBLIC_VERCEL_URL : undefined,
+    () => readPublicProcessEnv(() => process.env.NEXT_PUBLIC_VERCEL_URL),
     () => importMetaEnv?.NEXT_PUBLIC_VERCEL_URL,
     () => typeof process !== "undefined" ? process.env.NUXT_ENV_VERCEL_URL : undefined,
     () => importMetaEnv?.NUXT_ENV_VERCEL_URL,
@@ -110,7 +110,7 @@ var FRAMEWORK_VERCEL_ENV_READERS = {
     () => importMetaEnv?.SANITY_STUDIO_VERCEL_URL
   ],
   VERCEL_BRANCH_URL: [
-    () => typeof process !== "undefined" ? process.env.NEXT_PUBLIC_VERCEL_BRANCH_URL : undefined,
+    () => readPublicProcessEnv(() => process.env.NEXT_PUBLIC_VERCEL_BRANCH_URL),
     () => importMetaEnv?.NEXT_PUBLIC_VERCEL_BRANCH_URL,
     () => typeof process !== "undefined" ? process.env.NUXT_ENV_VERCEL_BRANCH_URL : undefined,
     () => importMetaEnv?.NUXT_ENV_VERCEL_BRANCH_URL,
@@ -130,7 +130,7 @@ var FRAMEWORK_VERCEL_ENV_READERS = {
     () => importMetaEnv?.SANITY_STUDIO_VERCEL_BRANCH_URL
   ],
   VERCEL_PROJECT_PRODUCTION_URL: [
-    () => typeof process !== "undefined" ? process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL : undefined,
+    () => readPublicProcessEnv(() => process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL),
     () => importMetaEnv?.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL,
     () => typeof process !== "undefined" ? process.env.NUXT_ENV_VERCEL_PROJECT_PRODUCTION_URL : undefined,
     () => importMetaEnv?.NUXT_ENV_VERCEL_PROJECT_PRODUCTION_URL,
@@ -181,7 +181,7 @@ function readViteTunnelUrl() {
 }
 var TUNNEL_URL_READERS = [
   () => typeof process !== "undefined" ? process.env.TUNNEL_URL : undefined,
-  () => typeof process !== "undefined" ? process.env.NEXT_PUBLIC_TUNNEL_URL : undefined,
+  () => readPublicProcessEnv(() => process.env.NEXT_PUBLIC_TUNNEL_URL),
   () => importMetaEnv?.NEXT_PUBLIC_TUNNEL_URL,
   () => typeof process !== "undefined" ? process.env.VITE_TUNNEL_URL : undefined,
   readViteTunnelUrl,
