@@ -20,7 +20,9 @@ jobs:
       - run: bun install --frozen-lockfile --ignore-scripts
       - run: bun run lint
       - run: ./node_modules/.bin/tsc --noEmit --emitDeclarationOnly false
-      - run: bun build --target=node ./src/index.ts --outfile=/dev/null
+      - run: bun run build
+      - name: Verify checked-in dist matches the real package build
+        run: git diff --exit-code -- dist
       - run: bun src/development-regression.ts
       - run: bun src/development-regression.ts --bundle
       - name: Verify checks left source unchanged
