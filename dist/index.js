@@ -125,12 +125,19 @@ var SYSTEM_VERCEL_ENV_READERS = {
     () => importMetaEnv?.VERCEL_PROJECT_PRODUCTION_URL
   ]
 };
+function readViteTunnelUrl() {
+  try {
+    return import.meta.env.VITE_TUNNEL_URL;
+  } catch {
+    return;
+  }
+}
 var TUNNEL_URL_READERS = [
   () => typeof process !== "undefined" ? process.env.TUNNEL_URL : undefined,
   () => typeof process !== "undefined" ? process.env.NEXT_PUBLIC_TUNNEL_URL : undefined,
   () => importMetaEnv?.NEXT_PUBLIC_TUNNEL_URL,
   () => typeof process !== "undefined" ? process.env.VITE_TUNNEL_URL : undefined,
-  () => importMetaEnv?.VITE_TUNNEL_URL,
+  readViteTunnelUrl,
   () => typeof process !== "undefined" ? process.env.PUBLIC_TUNNEL_URL : undefined,
   () => importMetaEnv?.PUBLIC_TUNNEL_URL
 ];
@@ -173,6 +180,9 @@ function getDevelopmentUrl() {
 }
 function getVercelDeploymentUrl(context) {
   const effectiveEnv = context.env || context.targetEnv;
+  if (effectiveEnv === "development") {
+    return getDevelopmentUrl();
+  }
   if (effectiveEnv === "preview") {
     return addProtocol(context.branchUrl || context.url || "localhost:3000");
   }
@@ -194,9 +204,9 @@ var VERCEL_URL = typeof process !== "undefined" ? process.env.VERCEL_URL : undef
 var VERCEL_BRANCH_URL = typeof process !== "undefined" ? process.env.VERCEL_BRANCH_URL : undefined;
 var VERCEL_PROJECT_PRODUCTION_URL = typeof process !== "undefined" ? process.env.VERCEL_PROJECT_PRODUCTION_URL : undefined;
 export {
-  VERCEL_URL,
-  VERCEL_PROJECT_PRODUCTION_URL,
-  VERCEL_ENV,
+  DEPLOYMENT_URL,
   VERCEL_BRANCH_URL,
-  DEPLOYMENT_URL
+  VERCEL_ENV,
+  VERCEL_PROJECT_PRODUCTION_URL,
+  VERCEL_URL
 };

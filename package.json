@@ -32,6 +32,7 @@
   "license": "MIT",
   "scripts": {
     "lint": "ultracite check",
+    "check": "bun run lint && ./node_modules/.bin/tsc --noEmit && bun src/development-regression.ts && bun run build",
     "format": "ultracite fix",
     "build:types": "tsc -p tsconfig.build.json",
     "build": "bun build --target=node ./src/index.ts --outfile=dist/index.js && bun run build:types",

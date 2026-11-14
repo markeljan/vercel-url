@@ -297,6 +297,20 @@ const SYSTEM_VERCEL_ENV_READERS: Record<VercelEnvName, readonly EnvReader[]> = {
   ],
 };
 
+/**
+ * Written as a literal `import.meta.env.VITE_TUNNEL_URL` so bundlers can
+ * statically replace it; the try/catch keeps it safe when `import.meta.env`
+ * is absent (e.g. plain Node or Bun runtime).
+ */
+function readViteTunnelUrl(): EnvValue {
+  try {
+    // @ts-expect-error ImportMeta.env is only typed by bundler-specific types.
+    return import.meta.env.VITE_TUNNEL_URL;
+  } catch {
+    return undefined;
+  }
+}
+
 const TUNNEL_URL_READERS: readonly EnvReader[] = [
   () => (typeof process !== "undefined" ? process.env.TUNNEL_URL : undefined),
   () =>
@@ -306,7 +320,7 @@ const TUNNEL_URL_READERS: readonly EnvReader[] = [
   () => importMetaEnv?.NEXT_PUBLIC_TUNNEL_URL,
   () =>
     typeof process !== "undefined" ? process.env.VITE_TUNNEL_URL : undefined,
-  () => importMetaEnv?.VITE_TUNNEL_URL,
+  readViteTunnelUrl,
   () =>
     typeof process !== "undefined" ? process.env.PUBLIC_TUNNEL_URL : undefined,
   () => importMetaEnv?.PUBLIC_TUNNEL_URL,
